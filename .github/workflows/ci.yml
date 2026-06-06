@@ -1,0 +1,30 @@
+name: Docs & Lint CI
+
+on:
+  push:
+    branches: [ main, initial-setup ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  markdown-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+      - name: Install markdownlint
+        run: npm install -g markdownlint-cli
+      - name: Run markdownlint
+        run: markdownlint "**/*.md"
+
+  linkcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install linkchecker
+        run: sudo apt-get update && sudo apt-get install -y linkchecker
+      - name: Check links in docs
+        run: linkchecker --ignore-url=github.com --no-warnings docs || true
